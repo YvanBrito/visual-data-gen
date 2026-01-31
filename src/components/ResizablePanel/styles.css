@@ -1,0 +1,49 @@
+.resizable-panel-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+.resizable-panel-top,
+.resizable-panel-bottom {
+    overflow: hidden;
+    position: relative;
+}
+
+.resizable-divider {
+    height: 8px;
+    background-color: transparent;
+    cursor: ns-resize;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+
+.resizable-divider:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.resizable-divider.dragging {
+    background-color: rgba(59, 130, 246, 0.2);
+}
+
+.resizable-divider-line {
+    width: 100%;
+    height: 2px;
+    background-color: var(--border-color, #e5e7eb);
+    transition: background-color 0.2s;
+}
+
+.resizable-divider:hover .resizable-divider-line {
+    background-color: #3b82f6;
+}
+
+.resizable-divider.dragging .resizable-divider-line {
+    background-color: #2563eb;
+}

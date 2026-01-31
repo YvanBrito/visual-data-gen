@@ -1,0 +1,36 @@
+.wrapper-editor{
+    cursor: grab;
+    overflow: auto;
+    height: 100%;
+    user-select: none;
+    /* Esconder scrollbar no Firefox */
+    scrollbar-width: none;
+    
+    /* Esconder scrollbar no Chrome, Safari e Edge */
+    -ms-overflow-style: none;
+}
+
+.wrapper-editor.active {
+    cursor: grabbing;
+}
+
+.editor {
+    height: 3000px;
+    width: 8000px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    background-color: var(--background-color);
+    background-image: 
+        linear-gradient(var(--border-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+    background-size: 20px 20px;
+}
+
+.wrapper-editor button {
+    position: fixed;
+    z-index: 9999;
+    top: 10px;
+    left: 5px;
+}

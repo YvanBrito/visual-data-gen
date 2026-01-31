@@ -1,0 +1,13 @@
+.connection-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Não interfere com cliques nos cards */
+    z-index: 1; /* Fica abaixo dos cards */
+}
+
+.connection-svg path {
+    transition: d 0.1s ease-out;
+}

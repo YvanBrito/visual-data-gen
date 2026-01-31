@@ -1,0 +1,66 @@
+.card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: var(--box-shadow);
+    padding: 16px;
+    width: 200px;
+    min-height: 100px;
+    cursor: grab;
+    user-select: none;
+    z-index: 10;
+    position: relative;
+}
+
+.card:active {
+    cursor: grabbing;
+}
+
+.card-content {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Círculos de conexão */
+.connection-port {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 50%;
+    cursor: crosshair;
+    opacity: 1;
+    transition: all 0.2s;
+    z-index: 20;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* Círculo de entrada (esquerda) - cor verde */
+.connection-port.left {
+    left: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #10b981;
+    border-color: #059669;
+}
+
+/* Círculo de saída (direita) - cor azul */
+.connection-port.right {
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: #3b82f6;
+    border-color: #2563eb;
+}
+
+.connection-port.left:hover {
+    background-color: #059669;
+    border-color: #047857;
+    transform: scale(1.3) translateY(-50%);
+}
+
+.connection-port.right:hover {
+    background-color: #2563eb;
+    border-color: #1d4ed8;
+    transform: scale(1.3) translateY(-50%);
+}
