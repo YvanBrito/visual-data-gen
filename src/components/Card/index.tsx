@@ -14,7 +14,27 @@ const Card = ({ id, initialPosition = { x: 50, y: 50 }, children }: CardProps) =
 
   const handlePortMouseDown = (e: React.MouseEvent, port: 'left' | 'right') => {
     e.stopPropagation(); // Evitar que o drag do card seja ativado
-    startConnection(id, port);
+    
+    // Calcular posição do mouse relativa ao editor
+    const editor = document.querySelector('.editor') as HTMLElement;
+    if (!editor) return;
+    
+    // Pegar o scale atual do editor
+    const transform = window.getComputedStyle(editor).transform;
+    let scale = 1;
+    if (transform && transform !== 'none') {
+      const matrix = transform.match(/matrix\(([^)]+)\)/);
+      if (matrix) {
+        const values = matrix[1].split(',').map(parseFloat);
+        scale = values[0]; // scaleX
+      }
+    }
+    
+    const editorRect = editor.getBoundingClientRect();
+    const mouseX = (e.clientX - editorRect.left) / scale;
+    const mouseY = (e.clientY - editorRect.top) / scale;
+    
+    startConnection(id, port, mouseX, mouseY);
   };
 
   const handlePortMouseUp = (e: React.MouseEvent, port: 'left' | 'right') => {

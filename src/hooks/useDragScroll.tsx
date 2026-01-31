@@ -65,7 +65,7 @@ export const useDragScroll = () => {
         e.preventDefault();
         
         const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const newScale = Math.min(Math.max(0.1, scale.current + delta), 3); // Min: 10%, Max: 300%
+        const newScale = Math.min(Math.max(0.6, scale.current + delta), 2); // Min: 60%, Max: 200%
         
         // Calcular posição do mouse relativa ao editor
         const rect = element.getBoundingClientRect();
@@ -85,6 +85,10 @@ export const useDragScroll = () => {
         scale.current = newScale;
         editor.style.transform = `scale(${newScale})`;
         editor.style.transformOrigin = '0 0';
+        
+        // Ajustar tamanho da grade baseado no zoom
+        const gridSize = 20 * newScale;
+        editor.style.backgroundSize = `${gridSize}px ${gridSize}px`;
       }
     };
 

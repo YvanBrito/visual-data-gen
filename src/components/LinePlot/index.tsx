@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 import {useRef, useEffect} from "react";
 import { useDGStore } from "../../context/store";
+import "./styles.css";
 
 interface LinePlotProps {
   data: {
@@ -36,7 +37,7 @@ const LinePlot = ({
     d3.select(gy.current as SVGGElement).call(d3.axisLeft(y));
   }, [gy, y]);
   return (
-    <svg width={width} height={height}>
+    <svg className="line-plot" width={width} height={height}>
       <g ref={gx} transform={`translate(0,${height - marginBottom})`} />
       <g ref={gy} transform={`translate(${marginLeft},0)`} />
       <path fill="none" stroke="currentColor" strokeWidth="1.5" d={line(data.x.map((_, i) => [data.x[i], data.y[i]] as [number, number])) || ""} />

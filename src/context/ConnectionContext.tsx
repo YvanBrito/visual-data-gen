@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { useDGStore } from './store';
 
 interface ConnectionData {
   id: string;
@@ -18,7 +19,7 @@ interface TempConnection {
 interface ConnectionContextType {
   connections: ConnectionData[];
   tempConnection: TempConnection | null;
-  startConnection: (fromId: string, fromPort: 'left' | 'right') => void;
+  startConnection: (fromId: string, fromPort: 'left' | 'right', mouseX: number, mouseY: number) => void;
   updateTempConnection: (mouseX: number, mouseY: number) => void;
   completeConnection: (toId: string, toPort: 'left' | 'right') => void;
   cancelConnection: () => void;
@@ -41,8 +42,15 @@ interface ConnectionProviderProps {
 export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
   const [connections, setConnections] = useState<ConnectionData[]>([]);
   const [tempConnection, setTempConnection] = useState<TempConnection | null>(null);
+  const generateSample = useDGStore((state) => state.generateSample);
 
-  const startConnection = (fromId: string, fromPort: 'left' | 'right') => {
+  const startConnection = (fromId: string, fromPort: 'left' | 'right', mouseX: number, mouseY: number) => {
+    // Verificar se existem conexões a serem removidas
+    const hasExistingConnection = connections.some(conn => 
+      (conn.fromId === fromId && conn.fromPort === fromPort) ||
+      (conn.toId === fromId && conn.toPort === fromPort)
+    );
+    
     // Remover conexões existentes deste círculo específico
     setConnections(prevConnections => 
       prevConnections.filter(conn => 
@@ -50,7 +58,13 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
         !(conn.toId === fromId && conn.toPort === fromPort)
       )
     );
-    setTempConnection({ fromId, fromPort, mouseX: 0, mouseY: 0 });
+    
+    // Se havia conexão, executar generateSample
+    if (hasExistingConnection) {
+      generateSample();
+    }
+    
+    setTempConnection({ fromId, fromPort, mouseX, mouseY });
   };
 
   const updateTempConnection = (mouseX: number, mouseY: number) => {
@@ -103,6 +117,9 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
     };
     setConnections([...filteredConnections, newConnection]);
     setTempConnection(null);
+    
+    // Executar generateSample após criar a nova conexão
+    generateSample();
   };
 
   const cancelConnection = () => {
