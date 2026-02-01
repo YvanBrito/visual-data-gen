@@ -97,7 +97,8 @@ const TempConnection = () => {
   const pathData = `M ${from.x} ${from.y} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${to.x} ${to.y}`;
 
   // Definir cor baseada no tipo de porta de origem
-  const strokeColor = tempConnection.fromPort === 'right' ? '#3b82f6' : '#10b981';
+  // Branco para saída (right), cinza para entradas
+  const strokeColor = tempConnection.fromPort === 'right' ? '#ffffff' : '#94a3b8';
 
   return (
     <svg className="connection-svg">

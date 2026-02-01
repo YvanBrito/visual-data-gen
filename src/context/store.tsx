@@ -3,28 +3,30 @@ import ChartTypes from '../constants/charts';
 
 interface DataGeneratorState {
     chart: ChartTypes;
+    generators: Array<any>;
     sampleSize: number;
     sample: {
         x: Array<number>,
         y: Array<number>
     };
     setChart: (newChart: ChartTypes) => void;
+    setNewGenerator: (newGenerator: Array<any>) => void;
     setSample: (newSample: { x: Array<number>, y: Array<number> }) => void;
-    generateSample: () => void;
 }
 
 const useDGStore = create<DataGeneratorState>((set, get) => ({
     chart: ChartTypes.LINE_PLOT,
+    generators: [],
     sampleSize: 50,
     sample: { x: [], y: [] },
     setChart: (newChart: ChartTypes) => set({ chart: newChart }),
+    setNewGenerator: (newGenerator: any) => {
+        console.log('Adding new generator:', newGenerator);
+        let gen: Array<any> = [...get().generators];
+        gen.push(newGenerator)
+        set({ generators: [...gen] });
+    },
     setSample: (newSample: { x: Array<number>, y: Array<number> }) => set({ sample: newSample }),
-    generateSample: () => {
-        const { sampleSize } = get();
-        const x = Array.from({ length: sampleSize }, (_, i) => i + 1);
-        const y = x.map(() => Math.floor(Math.random() * 100));
-        set({ sample: { x, y } });
-    }
 }))
 
 export { useDGStore };

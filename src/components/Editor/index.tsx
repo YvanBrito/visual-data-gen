@@ -1,16 +1,17 @@
 import { useDGStore } from "../../context/store";
 import { useDragScroll } from "../../hooks/useDragScroll";
 import { useConnection } from "../../context/ConnectionContext";
-import { Card } from "../Card";
 import { Connection } from "../Connection";
 import { TempConnection } from "../TempConnection";
 import { ContextMenu, ContextMenuItem } from "../ContextMenu";
 import { useState } from "react";
 import "./styles.css";
+import { LinePlotCard } from "../Cards/LinePlot";
+import { UniformGeneratorCard } from "../Cards/Generators/UniformGenerator";
+import { LinearGeneratorCard } from "../Cards/Generators/LinearGenerator";
 
 const Editor = () => {
     const scrollRef = useDragScroll();
-    const generateSample = useDGStore((state) => state.generateSample);
     const { connections } = useConnection();
     const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
 
@@ -32,7 +33,7 @@ const Editor = () => {
             label: 'Gerar Dados',
             icon: '🎲',
             onClick: () => {
-                generateSample();
+                console.log('Gerar dados');
             }
         },
         { divider: true } as ContextMenuItem,
@@ -65,7 +66,7 @@ const Editor = () => {
     
     return (
     <div ref={scrollRef} className="wrapper-editor" onContextMenu={handleContextMenu}>
-        <button onClick={generateSample}>Generate Sample Data</button>
+        <button onClick={() => console.log('Generate Sample Data clicked')}>Generate Sample Data</button>
         <div className="editor">
             {/* Renderizar todas as conexões */}
             {connections.map((conn) => (
@@ -80,21 +81,13 @@ const Editor = () => {
             
             {/* Conexão temporária durante drag */}
             <TempConnection />
-                
-            <Card id="1" initialPosition={{ x: 3800, y: 1400 }}>
-                <h3>Card 1</h3>
-                <p>Arraste-me!</p>
-            </Card>
             
-            <Card id="2" initialPosition={{ x: 4100, y: 1450 }}>
-                <h3>Card 2</h3>
-                <p>Eu também!</p>
-            </Card>
-            
-            <Card id="3" initialPosition={{ x: 4400, y: 1500 }}>
-                <h3>Card 3</h3>
-                <p>E eu!</p>
-            </Card>
+            <LinearGeneratorCard />
+            <UniformGeneratorCard />
+            <UniformGeneratorCard />
+            <UniformGeneratorCard />
+            <LinePlotCard />
+
         </div>
         
         {/* Context Menu */}

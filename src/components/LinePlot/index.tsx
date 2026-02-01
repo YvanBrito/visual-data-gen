@@ -1,6 +1,5 @@
 import * as d3 from "d3";
 import {useRef, useEffect} from "react";
-import { useDGStore } from "../../context/store";
 import "./styles.css";
 
 interface LinePlotProps {

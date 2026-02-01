@@ -4,8 +4,8 @@ import './styles.css';
 interface ConnectionProps {
   fromId: string;
   toId: string;
-  fromPort?: 'left' | 'right' | 'top' | 'bottom';
-  toPort?: 'left' | 'right' | 'top' | 'bottom';
+  fromPort?: string;
+  toPort?: string;
   color?: string;
   strokeWidth?: number;
 }
@@ -15,7 +15,7 @@ const Connection = ({
   toId,
   fromPort = 'right',
   toPort = 'left',
-  color = '#3b82f6', // Azul por padrão (saída -> entrada)
+  color = '#ffffff', // Branco por padrão (saída -> entrada)
   strokeWidth = 2 
 }: ConnectionProps) => {
   const [path, setPath] = useState('');

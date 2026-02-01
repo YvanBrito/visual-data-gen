@@ -5,24 +5,31 @@ interface ConnectionData {
   id: string;
   fromId: string;
   toId: string;
-  fromPort: 'left' | 'right';
-  toPort: 'left' | 'right';
+  fromPort: string;
+  toPort: string;
 }
 
 interface TempConnection {
   fromId: string;
-  fromPort: 'left' | 'right';
+  fromPort: string;
   mouseX: number;
   mouseY: number;
+}
+
+interface CardOutputData {
+  [cardId: string]: any; // Armazena o output de cada card
 }
 
 interface ConnectionContextType {
   connections: ConnectionData[];
   tempConnection: TempConnection | null;
-  startConnection: (fromId: string, fromPort: 'left' | 'right', mouseX: number, mouseY: number) => void;
+  cardOutputs: CardOutputData;
+  startConnection: (fromId: string, fromPort: string, mouseX: number, mouseY: number) => void;
   updateTempConnection: (mouseX: number, mouseY: number) => void;
-  completeConnection: (toId: string, toPort: 'left' | 'right') => void;
+  completeConnection: (toId: string, toPort: string) => void;
   cancelConnection: () => void;
+  setCardOutput: (cardId: string, output: any) => void;
+  getConnectedOutput: (cardId: string, inputPort: string) => any;
 }
 
 const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined);
@@ -42,15 +49,30 @@ interface ConnectionProviderProps {
 export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
   const [connections, setConnections] = useState<ConnectionData[]>([]);
   const [tempConnection, setTempConnection] = useState<TempConnection | null>(null);
-  const generateSample = useDGStore((state) => state.generateSample);
+  const [cardOutputs, setCardOutputs] = useState<CardOutputData>({});
 
-  const startConnection = (fromId: string, fromPort: 'left' | 'right', mouseX: number, mouseY: number) => {
-    // Verificar se existem conexões a serem removidas
-    const hasExistingConnection = connections.some(conn => 
-      (conn.fromId === fromId && conn.fromPort === fromPort) ||
-      (conn.toId === fromId && conn.toPort === fromPort)
+  const setCardOutput = (cardId: string, output: any) => {
+    setCardOutputs(prev => ({
+      ...prev,
+      [cardId]: output
+    }));
+  };
+
+  const getConnectedOutput = (cardId: string, inputPort: string): any => {
+    // Encontrar a conexão que vai para este card e input
+    const connection = connections.find(conn => 
+      conn.toId === cardId && conn.toPort === inputPort
     );
     
+    if (!connection) {
+      return undefined;
+    }
+    
+    // Retornar o output do card conectado
+    return cardOutputs[connection.fromId];
+  };
+
+  const startConnection = (fromId: string, fromPort: string, mouseX: number, mouseY: number) => {
     // Remover conexões existentes deste círculo específico
     setConnections(prevConnections => 
       prevConnections.filter(conn => 
@@ -58,11 +80,6 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
         !(conn.toId === fromId && conn.toPort === fromPort)
       )
     );
-    
-    // Se havia conexão, executar generateSample
-    if (hasExistingConnection) {
-      generateSample();
-    }
     
     setTempConnection({ fromId, fromPort, mouseX, mouseY });
   };
@@ -73,29 +90,31 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
     }
   };
 
-  const completeConnection = (toId: string, toPort: 'left' | 'right') => {
+  const completeConnection = (toId: string, toPort: string) => {
     if (!tempConnection || tempConnection.fromId === toId) {
       setTempConnection(null);
       return;
     }
 
-    // Validar que entrada (left) só conecta com saída (right) e vice-versa
+    // Validar que saída (right) só conecta com entrada (input IDs)
     const fromPort = tempConnection.fromPort;
+    const isFromOutput = fromPort === 'right';
+    const isToOutput = toPort === 'right';
     
-    // Se ambos forem do mesmo tipo (ambos entrada ou ambos saída), não permitir
-    if (fromPort === toPort) {
+    // Não permitir conectar saída com saída ou entrada com entrada (mesmo card)
+    if (isFromOutput === isToOutput) {
       setTempConnection(null);
       return;
     }
 
-    // Garantir que a conexão sempre vai de saída (right) para entrada (left)
+    // Garantir que a conexão sempre vai de saída (right) para entrada (input ID)
     let finalFromId = tempConnection.fromId;
     let finalFromPort = fromPort;
     let finalToId = toId;
     let finalToPort = toPort;
 
-    // Se a conexão começou na entrada (left), inverter a direção
-    if (fromPort === 'left') {
+    // Se a conexão começou na entrada, inverter a direção
+    if (!isFromOutput) {
       finalFromId = toId;
       finalFromPort = toPort;
       finalToId = tempConnection.fromId;
@@ -117,9 +136,6 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
     };
     setConnections([...filteredConnections, newConnection]);
     setTempConnection(null);
-    
-    // Executar generateSample após criar a nova conexão
-    generateSample();
   };
 
   const cancelConnection = () => {
@@ -131,10 +147,13 @@ export const ConnectionProvider = ({ children }: ConnectionProviderProps) => {
       value={{
         connections,
         tempConnection,
+        cardOutputs,
         startConnection,
         updateTempConnection,
         completeConnection,
         cancelConnection,
+        setCardOutput,
+        getConnectedOutput,
       }}
     >
       {children}
